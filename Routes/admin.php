@@ -1,6 +1,7 @@
 <?php
 
 Route::group([
+    'prefix' => '{company_id}',
     'middleware' => 'admin',
     'namespace' => 'Modules\OfflinePayments\Http\Controllers'
 ], function () {
