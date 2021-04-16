@@ -7,7 +7,6 @@ use \App\Events\Document\PaymentReceived;
 use App\Http\Requests\Portal\InvoicePayment as PaymentRequest;
 use App\Models\Document\Document;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
 
 class Payment extends PaymentController
 {
@@ -29,34 +28,9 @@ class Payment extends PaymentController
             }
         }
 
-        $html = view('offline-payments::show', compact('setting', 'invoice'))->render();
+        $confirm_url = $this->getConfirmUrl($invoice);
 
-        return response()->json([
-            'code' => $setting['code'],
-            'name' => $setting['name'],
-            'description' => $setting['description'],
-            'redirect' => false,
-            'html' => $html,
-        ]);
-    }
-
-    public function signed(Document $invoice, PaymentRequest $request)
-    {
-        $setting = [];
-
-        $payment_methods = json_decode(setting('offline-payments.methods'), true);
-
-        foreach ($payment_methods as $payment_method) {
-            if ($payment_method['code'] == $request['payment_method']) {
-                $setting = $payment_method;
-
-                break;
-            }
-        }
-
-        $confirm_url = URL::signedRoute('signed.invoices.offline-payments.confirm', [$invoice->id, 'company_id' => session('company_id')]);
-
-        $html = view('offline-payments::signed', compact('setting', 'invoice', 'confirm_url'))->render();
+        $html = view('offline-payments::show', compact('setting', 'invoice', 'confirm_url'))->render();
 
         return response()->json([
             'code' => $setting['code'],

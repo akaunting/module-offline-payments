@@ -13,7 +13,7 @@
     <div class="buttons">
         <div class="pull-right">
             {!! Form::open([
-                'url' => route("portal.invoices.offline-payments.confirm", $invoice->id),
+                'url' => $confirm_url,
                 'id' => 'redirect-form',
                 'role' => 'form',
                 'autocomplete' => "off",
@@ -24,7 +24,7 @@
                 </button>
                 {!! Form::hidden('payment_method', $setting['code']) !!}
                 {!! Form::hidden('type', 'income') !!}
-                
+
             {!! Form::close() !!}
         </div>
     </div>

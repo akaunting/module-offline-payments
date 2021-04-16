@@ -1,10 +1,14 @@
 <?php
 
-Route::group([
-    'prefix' => '{company_id}/portal',
-    'middleware' => 'portal',
-    'namespace' => 'Modules\OfflinePayments\Http\Controllers'
-], function () {
-    Route::get('invoices/{invoice}/offline-payments', 'Payment@show')->name('portal.invoices.offline-payments.show');
-    Route::post('invoices/{invoice}/offline-payments/confirm', 'Payment@confirm')->name('portal.invoices.offline-payments.confirm');
+use Illuminate\Support\Facades\Route;
+
+/**
+ * 'portal' middleware and 'portal/offline-payments' prefix applied to all routes (including names)
+ *
+ * @see \App\Providers\Route::register
+ */
+
+Route::portal('offline-payments', function () {
+    Route::get('invoices/{invoice}', 'Payment@show')->name('invoices.show');
+    Route::post('invoices/{invoice}/confirm', 'Payment@confirm')->name('invoices.confirm');
 });

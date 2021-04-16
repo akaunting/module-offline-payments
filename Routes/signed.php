@@ -1,10 +1,14 @@
 <?php
 
-Route::group([
-    'prefix' => '{company_id}/signed',
-    'middleware' => 'signed',
-    'namespace' => 'Modules\OfflinePayments\Http\Controllers'
-], function () {
-    Route::get('invoices/{invoice}/offline-payments', 'Payment@signed')->name('signed.invoices.offline-payments.show');
-    Route::post('invoices/{invoice}/offline-payments/confirm', 'Payment@confirm')->name('signed.invoices.offline-payments.confirm');
+use Illuminate\Support\Facades\Route;
+
+/**
+ * 'signed' middleware and 'signed/offline-payments' prefix applied to all routes (including names)
+ *
+ * @see \App\Providers\Route::register
+ */
+
+Route::signed('offline-payments', function () {
+    Route::get('invoices/{invoice}', 'Payment@show')->name('invoices.show');
+    Route::post('invoices/{invoice}/confirm', 'Payment@confirm')->name('invoices.confirm');
 });
