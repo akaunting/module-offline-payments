@@ -38,7 +38,7 @@ const app = new Vue({
 
             this.form.loading = true;
 
-            axios.post('offline-payments/settings/get', {
+            axios.post(url + '/offline-payments/settings/get', {
                 code: code
             })
             .then(response => {
@@ -89,7 +89,7 @@ const app = new Vue({
                        async onDelete() {
                             let promise = Promise.resolve(axios({
                                 method: 'DELETE',
-                                url: 'offline-payments/settings/delete',
+                                url: url + '/offline-payments/settings/delete',
                                 data: {
                                     code: this.confirm.code
                                 }
@@ -102,7 +102,7 @@ const app = new Vue({
                                     if (response.data.redirect) {
                                         //window.location.href = response.data.redirect;
                                     }
-                
+
                                     document.getElementById('method-' + this.confirm.code).remove();
                                 }
 
