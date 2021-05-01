@@ -25,7 +25,6 @@ class Setting extends Request
     {
         return [
             'name' => 'required|string',
-            'code' => 'required|string',
         ];
     }
 }

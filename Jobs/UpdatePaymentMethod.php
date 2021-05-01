@@ -40,7 +40,7 @@ class UpdatePaymentMethod extends Job
             $method = explode('.', $code);
 
             $payment_method = [
-                'code' => 'offline-payments.' . $this->request->get('code') . '.' . $method[2],
+                'code' => $code,
                 'name' => $this->request->get('name'),
                 'customer' => $this->request->get('customer'),
                 'order' => $this->request->get('order'),

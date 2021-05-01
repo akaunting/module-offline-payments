@@ -4,6 +4,7 @@ namespace Modules\OfflinePayments\Jobs;
 
 use App\Abstracts\Job;
 use App\Utilities\Modules;
+use Illuminate\Support\Str;
 
 class CreatePaymentMethod extends Job
 {
@@ -28,8 +29,10 @@ class CreatePaymentMethod extends Job
     {
         $methods = json_decode(setting('offline-payments.methods'), true);
 
+        $code = 'offline-payments.' . Str::slug($this->request->get('name'), '_') . '.' . (count($methods) + 1);
+
         $payment_method = [
-            'code' => 'offline-payments.' . $this->request->get('code') . '.' . (count($methods) + 1),
+            'code' => $code,
             'name' => $this->request->get('name'),
             'customer' => $this->request->get('customer'),
             'order' => $this->request->get('order'),

@@ -27,8 +27,6 @@
                         <div class="row">
                             {{ Form::textGroup('name', trans('general.name'), 'money-check', ['required' => 'required'], null, 'col-md-12') }}
 
-                            {{ Form::textGroup('code', trans('offline-payments::general.form.code'), 'code', ['required' => 'required'], null, 'col-md-12') }}
-
                             {{ Form::radioGroup('customer', trans('offline-payments::general.form.customer'), 0, trans('general.yes'), trans('general.no'), ['required' => 'required'], 'col-md-12') }}
 
                             {{ Form::textGroup('order', trans('offline-payments::general.form.order'), 'sort', [], null, 'col-md-12') }}
@@ -61,7 +59,7 @@
                         <thead class="thead-light">
                             <tr class="row table-head-line">
                                 <th class="col-xs-6 col-sm-4 col-md-4 col-lg-3">{{ trans('general.name') }}</th>
-                                <th class="col-sm-4  col-md-4 col-lg-4 hidden-sm">{{ trans('offline-payments::general.form.code') }}</th>
+                                <th class="col-sm-4  col-md-4 col-lg-4 hidden-sm">{{ trans('general.description') }}</th>
                                 <th class="col-lg-2 hidden-lg">{{ trans('offline-payments::general.form.order') }}</th>
                                 <th class="col-xs-6 col-sm-4 col-md-4 col-lg-3 text-center">{{ trans('general.actions') }}</th>
                             </tr>
@@ -71,7 +69,7 @@
                                 @foreach($methods as $item)
                                     <tr class="row align-items-center border-top-1" id="method-{{ $item->code }}">
                                         <td class="col-xs-6 col-sm-4 col-md-4 col-lg-3">{{ $item->name }}</td>
-                                        <td class="col-sm-4 col-md-4 col-lg-4 hidden-sm">{{ $item->code }}</td>
+                                        <td class="col-sm-4 col-md-4 col-lg-4 hidden-sm long-texts">{{ ($item->description) ?? trans('general.na') }}</td>
                                         <td class="col-lg-2 hidden-lg">{{ $item->order }}</td>
                                         <td class="col-xs-6 col-sm-4 col-md-4 col-lg-3 text-center">
                                             <div class="dropdown">
