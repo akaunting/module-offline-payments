@@ -31,7 +31,7 @@
 
                             {{ Form::textGroup('order', trans('offline-payments::general.form.order'), 'sort', [], null, 'col-md-12') }}
 
-                            {{ Form::textareaGroup('description', trans('general.description')) }}
+                            {{ Form::textareaGroup('description', trans('general.description'), null, null, ['rows' => '3', 'enable-v-model' => true]) }}
 
                             {!! Form::hidden('update_code', null) !!}
                         </div>
