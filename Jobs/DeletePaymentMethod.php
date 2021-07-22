@@ -5,6 +5,7 @@ namespace Modules\OfflinePayments\Jobs;
 use App\Abstracts\Job;
 use App\Utilities\Modules;
 use App\Models\Banking\Transaction;
+use App\Models\Banking\Transfer;
 
 class DeletePaymentMethod extends Job
 {
@@ -75,11 +76,13 @@ class DeletePaymentMethod extends Job
     {
         $counter = [];
 
-        if (!$c = Transaction::where('payment_method', $this->request->get('code'))->get()->count()) {
-            return [];
+        if ($transaction_count = Transaction::where('payment_method', $this->request->get('code'))->count()) {
+            $counter[] = $transaction_count . ' ' . strtolower(trans_choice('general.transactions', ($transaction_count > 1) ? 2 : 1));
         }
 
-        $counter[] = $c . ' ' . strtolower(trans_choice('general.transactions', ($c > 1) ? 2 : 1));
+        if ($transfer_count = Transfer::where('payment_method', $this->request->get('code'))->count()) {
+            $counter[] = $transfer_count . ' ' . strtolower(trans_choice('general.transfers', ($transfer_count > 1) ? 2 : 1));
+        }
 
         return $counter;
     }

@@ -37,8 +37,6 @@ class UpdatePaymentMethod extends Job
                 continue;
             }
 
-            $method = explode('.', $code);
-
             $payment_method = [
                 'code' => $code,
                 'name' => $this->request->get('name'),
