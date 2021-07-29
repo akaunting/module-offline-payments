@@ -6,6 +6,7 @@ use App\Abstracts\Http\PaymentController;
 use \App\Events\Document\PaymentReceived;
 use App\Http\Requests\Portal\InvoicePayment as PaymentRequest;
 use App\Models\Document\Document;
+use App\Utilities\Modules;
 use Illuminate\Http\Request;
 
 class Payment extends PaymentController
@@ -26,6 +27,18 @@ class Payment extends PaymentController
 
                 break;
             }
+        }
+
+        if (empty($setting)) {
+            Modules::clearPaymentMethodsCache();
+
+            return response()->json([
+                'code' => '',
+                'name' => 'N/A',
+                'description' => '',
+                'redirect' => redirect()->back()->getTargetUrl(),
+                'html' => '',
+            ]);
         }
 
         $confirm_url = $this->getConfirmUrl($invoice);
