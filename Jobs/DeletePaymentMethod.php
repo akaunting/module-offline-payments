@@ -80,10 +80,6 @@ class DeletePaymentMethod extends Job
             $counter[] = $transaction_count . ' ' . strtolower(trans_choice('general.transactions', ($transaction_count > 1) ? 2 : 1));
         }
 
-        if ($transfer_count = Transfer::where('payment_method', $this->request->get('code'))->count()) {
-            $counter[] = $transfer_count . ' ' . strtolower(trans_choice('general.transfers', ($transfer_count > 1) ? 2 : 1));
-        }
-
         return $counter;
     }
 }
