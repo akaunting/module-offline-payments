@@ -64,7 +64,6 @@ class Payment extends PaymentController
             $response = [
                 'success' => true,
                 'error' => false,
-                'message' => $message,
                 'data' => false,
             ];
         } catch(\Exception $e) {
@@ -73,10 +72,11 @@ class Payment extends PaymentController
             $response = [
                 'success' => false,
                 'error' => true,
-                'message' => $message,
                 'data' => false,
             ];
         }
+
+        flash($message)->success();
 
         return response()->json($response);
     }
