@@ -59,7 +59,7 @@ class Payment extends PaymentController
         try {
             event(new PaymentReceived($invoice, $request));
 
-            $message = trans('messages.success.added', ['type' => trans_choice('general.payments', 1)]);
+            flash(trans('messages.success.added', ['type' => trans_choice('general.payments', 1)]))->success();
 
             $response = [
                 'success' => true,
@@ -67,7 +67,7 @@ class Payment extends PaymentController
                 'data' => false,
             ];
         } catch(\Exception $e) {
-            $message = $e->getMessage();
+            flash($e->getMessage())->error()->important();
 
             $response = [
                 'success' => false,
@@ -75,8 +75,6 @@ class Payment extends PaymentController
                 'data' => false,
             ];
         }
-
-        flash($message)->success();
 
         return response()->json($response);
     }
