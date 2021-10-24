@@ -11,7 +11,7 @@ return [
     'form' => [
         'code'          => 'Kode',
         'customer'      => 'Vis til kunde',
-        'order'         => 'Bestille'
+        'order'         => 'Rækkefølge'
     ],
 
     'methods'           => 'Metode|Metoder',
