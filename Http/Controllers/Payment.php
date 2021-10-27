@@ -58,20 +58,26 @@ class Payment extends PaymentController
     {
         try {
             event(new PaymentReceived($invoice, $request));
+            
+            $message = trans('messages.success.added', ['type' => trans_choice('general.payments', 1)]);
 
-            flash(trans('messages.success.added', ['type' => trans_choice('general.payments', 1)]))->success();
+            flash($message)->success();
 
             $response = [
                 'success' => true,
                 'error' => false,
+                'message' => $message,
                 'data' => false,
             ];
         } catch(\Exception $e) {
-            flash($e->getMessage())->error()->important();
+            $message = $e->getMessage();
+
+            flash($message)->error()->important();
 
             $response = [
                 'success' => false,
                 'error' => true,
+                'message' => $message,
                 'data' => false,
             ];
         }
