@@ -58,7 +58,7 @@ class Payment extends PaymentController
     {
         try {
             event(new PaymentReceived($invoice, $request));
-            
+
             $message = trans('messages.success.added', ['type' => trans_choice('general.payments', 1)]);
 
             flash($message)->success();
