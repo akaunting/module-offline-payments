@@ -61,6 +61,8 @@ class Payment extends PaymentController
 
             $message = trans('messages.success.added', ['type' => trans_choice('general.payments', 1)]);
 
+            flash($message)->success();
+
             $response = [
                 'success' => true,
                 'error' => false,
@@ -69,6 +71,8 @@ class Payment extends PaymentController
             ];
         } catch(\Exception $e) {
             $message = $e->getMessage();
+
+            flash($message)->error()->important();
 
             $response = [
                 'success' => false,
