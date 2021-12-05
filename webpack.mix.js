@@ -13,6 +13,11 @@ const mix = require('laravel-mix');
 
 //mix.js('resources/assets/js/views/**/*.js', 'public/js')
 
-mix.js('Resources/assets/js/offline-payments.js', 'Resources/assets/js/offline-payments.min.js')
-
-    .sass('./../../resources/assets/sass/argon.scss', './../../public/css');
+mix.options({
+        terser: {
+            extractComments: false,
+        }
+    })
+    .js('Resources/assets/js/offline-payments.js', 'Resources/assets/js/offline-payments.min.js')
+    .sass('./../../resources/assets/sass/argon.scss', './../../public/css')
+    .vue();
