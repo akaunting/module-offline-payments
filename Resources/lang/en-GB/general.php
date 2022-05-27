@@ -2,20 +2,21 @@
 
 return [
 
-    'name'              => 'Offline Payments',
-    'description'       => 'Create unlimited payment options for admin usage',
+    'name'                  => 'Offline Payments',
+    'description'           => 'Create unlimited payment options for admin usage',
 
-    'add_new'           => 'Add New',
-    'edit'              => 'Edit: :method',
+    'add_new'               => 'Add New',
+    'edit'                  => 'Edit: :method',
 
     'form' => [
-        'code'          => 'Code',
-        'customer'      => 'Show to Customer',
-        'order'         => 'Order'
+        'code'              => 'Code',
+        'customer'          => 'Show to Customer',
+        'order'             => 'Order'
     ],
 
-    'methods'           => 'Method|Methods',
+    'methods'               => 'Method|Methods',
 
-    'payment_gateways'  => 'Offline Payment Methods',
+    'payment_gateways'      => 'Offline Payment Methods',
+    'gateways_description'  => 'Manage All Offline Payment Methods',
 
 ];

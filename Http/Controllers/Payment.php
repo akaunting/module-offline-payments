@@ -15,7 +15,7 @@ class Payment extends PaymentController
 
     public $type = 'redirect';
 
-    public function show(Document $invoice, PaymentRequest $request)
+    public function show(Document $invoice, PaymentRequest $request, $cards = [])
     {
         $setting = [];
 

@@ -32,14 +32,8 @@ const app = new Vue({
 
     methods:{
         onEdit(event) {
-            var code = event.target.dataset.code;
-
-            this.form_loading = '<span class="form-loading-bar"><span class="form-loading-spin"><i class="fa fa-spinner fa-spin"></i></span></span>';
-
-            this.form.loading = true;
-
             axios.post(url + '/offline-payments/settings/get', {
-                code: code
+                code: event
             })
             .then(response => {
                 this.form.name = response.data.data.name;
@@ -87,22 +81,16 @@ const app = new Vue({
                     methods: {
                         // Delete action post
                        async onDelete() {
-                            let promise = Promise.resolve(axios({
+                            Promise.resolve(axios({
                                 method: 'DELETE',
                                 url: url + '/offline-payments/settings/delete',
                                 data: {
                                     code: this.confirm.code
                                 }
-                            }));
-
-                            promise.then(response => {
+                            })).then(response => {
                                 var type = (response.data.success) ? 'success' : 'warning';
 
                                 if (response.data.success) {
-                                    if (response.data.redirect) {
-                                        //window.location.href = response.data.redirect;
-                                    }
-
                                     document.getElementById('method-' + this.confirm.code).remove();
                                 }
 
@@ -111,7 +99,7 @@ const app = new Vue({
                                 this.$notify({
                                     message: response.data.message,
                                     timeout: 5000,
-                                    icon: 'fas fa-bell',
+                                    icon: 'info',
                                     type
                                 });
                             })

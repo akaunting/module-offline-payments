@@ -19,5 +19,4 @@ mix.options({
         }
     })
     .js('Resources/assets/js/offline-payments.js', 'Resources/assets/js/offline-payments.min.js')
-    .sass('./../../resources/assets/sass/argon.scss', './../../public/css')
     .vue();

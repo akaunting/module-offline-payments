@@ -7,27 +7,20 @@ use Tests\Feature\FeatureTestCase;
 
 class SettingsTest extends FeatureTestCase
 {
-    public function testItShouldSeeOfflinePaymentsInSettingsListPage()
-    {
-        $this->loginAs()
-            ->get(route('settings.index'))
-            ->assertStatus(200)
-            ->assertSeeText(trans('offline-payments::general.description'));
-    }
-
     public function testItShouldSeeOfflinePaymentsSettingsListPage()
     {
         $this->loginAs()
             ->get(route('offline-payments.settings.edit'))
-            ->assertStatus(200)
-            ->assertSeeText(trans('offline-payments::general.payment_gateways'));
+            ->assertOk()
+            ->assertSeeText(trans('offline-payments::general.payment_gateways'))
+            ->assertSeeText(trans('offline-payments::general.description'));
     }
 
     public function testItShouldSeeOfflinePaymentsSettingsCreatePage()
     {
         $this->loginAs()
             ->get(route('offline-payments.settings.edit'))
-            ->assertStatus(200)
+            ->assertOk()
             ->assertSeeText(trans('offline-payments::general.add_new'));
     }
 
@@ -39,7 +32,7 @@ class SettingsTest extends FeatureTestCase
 
         $this->loginAs()
             ->post(route('offline-payments.settings.update'), $request)
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJson([
                 'success' => true,
                 'message' => $message,
@@ -52,7 +45,7 @@ class SettingsTest extends FeatureTestCase
 
         $this->loginAs()
             ->post(route('offline-payments.settings.get', ['code' => $payment_method['code']]))
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJson([
                 'success' => true,
                 'data' => [
@@ -74,7 +67,7 @@ class SettingsTest extends FeatureTestCase
 
         $this->loginAs()
             ->post(route('offline-payments.settings.update'), $request)
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJson([
                 'success' => true,
                 'message' => $message,
@@ -89,7 +82,7 @@ class SettingsTest extends FeatureTestCase
 
         $this->loginAs()
             ->delete(route('offline-payments.settings.delete', ['code' => $payment_method['code']]))
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJson([
                 'success' => true,
                 'message' => $message,

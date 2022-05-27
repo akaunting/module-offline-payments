@@ -112,17 +112,7 @@ class Settings extends Controller
         $response = $this->ajaxDispatch(new DeletePaymentMethod($request));
 
         if ($response['success']) {
-            //$response['redirect'] = route('offline-payments.settings.edit');
-
             $response['message'] = trans('messages.success.deleted', ['type' => $response['data']['name']]);
-
-            //flash($message)->success();
-        } else {
-            //$response['redirect'] = route('offline-payments.settings.edit');
-
-            $message = $response['message'];
-
-            //flash($message)->error()->important();
         }
 
         return response()->json($response);
