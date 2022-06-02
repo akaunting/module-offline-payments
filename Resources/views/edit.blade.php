@@ -1,142 +1,118 @@
-@extends('layouts.admin')
+<x-layouts.admin>
+    <x-slot name="title">{{ trans('offline-payments::general.name') }}</x-slot>
 
-@section('title', trans('offline-payments::general.name'))
+    <x-slot name="content">
+        <x-show.container>
+            <x-show.content>
+                <x-show.content.left>
+                    <x-form id="offline-payment" method="POST" route="offline-payments.settings.update">
+                        <x-form.section>
+                            <x-slot name="head">
+                                <x-form.section.head title="{{ trans('general.add_new') }}" description="{{ trans('offline-payments::general.description') }}" />
+                            </x-slot>
+        
+                            <x-slot name="body">
+                                <x-form.group.text name="name" label="{{ trans('general.name') }}" form-group-class="sm:col-span-6" />
+        
+                                <x-form.group.text name="order" label="{{ trans('offline-payments::general.form.order') }}" form-group-class="sm:col-span-6" not-required />
+        
+                                <x-form.group.textarea name="description" label="{{ trans('general.description') }}" form-group-class="sm:col-span-6" row="3" enable-v-model="true" not-required />
+        
+                                <x-form.group.toggle name="customer" label="{{ trans('offline-payments::general.form.customer') }}" :value="false" />
+        
+                                <x-form.input.hidden name="update_code" />
+                            </x-slot>
+        
+                            <x-slot name="foot">
+                                <x-form.buttons :cancel="url()->previous()" />
+                            </x-slot>
+                        </x-form.section>
+                    </x-form>
+                </x-show.content.left>
+                
+                <x-show.content.right>
+                    <x-form.section.head title="{{ trans('offline-payments::general.payment_gateways') }}" description="{{ trans('offline-payments::general.gateways_description') }}" />
 
-@section('content')
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="mb-0">{{ trans('offline-payments::general.add_new') }}</h3>
-                </div>
+                    <x-table>
+                        <x-table.thead>
+                            <x-table.tr class="flex items-center px-1">
+                                <x-table.th class="w-3/12 sm:w-3/12">
+                                    {{ trans('general.name') }}
+                                </x-table.th>
+            
+                                <x-table.th class="w-5/12 sm:w-5/12">
+                                    {{ trans('general.description') }}
+                                </x-table.th>
+            
+                                <x-table.th class="w-2/12 sm:w-2/12">
+                                    {{ trans('offline-payments::general.form.order') }}
+                                </x-table.th>
+            
+                                <x-table.th class="w-2/12 sm:w-2/12">
+                                    {{ trans('general.actions') }}
+                                </x-table.th>
+                            </x-table.tr>
+                        </x-table.thead>
+            
+                        <x-table.tbody>
+                            @foreach($methods as $item)
+                                <x-table.tr id="method-{{ $item->code }}">
+                                    <x-table.th class="w-3/12 sm:w-3/12">
+                                        {{ $item->name }}
+                                    </x-table.th>
+            
+                                    <x-table.th class="w-5/12 sm:w-5/12">
+                                        {{ $item->description ?? trans('general.na') }}
+                                    </x-table.th>
+            
+                                    <x-table.th class="w-2/12 sm:w-2/12">
+                                        {{ $item->order }}
+                                    </x-table.th>
+            
+                                    <x-table.th class="w-2/12 sm:w-2/12">
+                                        <div class="ltr:right-8 rtl:left-8 flex items-center">
+                                            @can('update-offline-payments-settings')
+                                                <x-button
+                                                    type="button"
+                                                    id="edit-{{ $item->code }}"
+                                                    data-code="{{ $item->code }}"
+                                                    class="relative bg-white hover:bg-gray-100 border py-0.5 px-1 cursor-pointer index-actions group"
+                                                    override="class"
+                                                    @click="onEdit('{{ $item->code }}')">
+                                                    <span class="material-icons-outlined text-purple text-lg">edit</span>
+                                                    <div class="inline-block absolute invisible z-20 py-1 px-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 shadow-sm opacity-0 tooltip-content -top-10 -left-2" data-tooltip-placement="top">
+                                                        <span>{{ trans('general.edit') }}</span>
+                                                        <div class="absolute w-2 h-2 -bottom-1 before:content-[' '] before:absolute before:w-2 before:h-2 before:bg-white before:border-gray-200 before:transform before:rotate-45 before:border before:border-t-0 before:border-l-0" data-popper-arrow></div>
+                                                    </div>
+                                                </x-button>
+                                            @endcan
+        
+                                            @can('delete-offline-payments-settings')
+                                                <x-button
+                                                    type="button"
+                                                    class="relative bg-white hover:bg-gray-100 border py-0.5 px-1 cursor-pointer index-actions"
+                                                    override="class"
+                                                    id="delete-{{ $item->code }}"
+                                                    data-code="{{ $item->code }}"
+                                                    v-bind:disabled="update_code === '{{ $item->code }}'"
+                                                    @click="confirmDelete('{{ $item->code }}', '{{ trans('general.delete') }}', '{{ trans('general.delete_confirm', ['name' => '<strong>' . $item->name . '</strong>', 'type' => mb_strtolower(trans('offline-payments::general.name'))]) }}', '{{ trans('general.cancel') }}', '{{ trans('general.delete') }}')">
+                                                    <span class="material-icons-outlined text-purple text-lg">delete</span>
+                                                    <div class="inline-block absolute invisible z-20 py-1 px-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 shadow-sm opacity-0 tooltip-content -top-10 -left-2" data-tooltip-placement="top">
+                                                        <span>{{ trans('general.delete') }}</span>
+                                                        <div class="absolute w-2 h-2 -bottom-1 before:content-[' '] before:absolute before:w-2 before:h-2 before:bg-white before:border-gray-200 before:transform before:rotate-45 before:border before:border-t-0 before:border-l-0" data-popper-arrow></div>
+                                                    </div>
+                                                </x-button>
+                                            @endcan
+                                        </div>
+                                    </x-table.th>
+                                </x-table.tr>
+                            @endforeach
+                        </x-table.tbody>
+                    </x-table>
+                </x-show.content.right>
+            </x-show.content>
+        </x-show.container>
+    </x-slot>
 
-                {!! Form::open([
-                    'id' => 'offline-payment',
-                    'route' => 'offline-payments.settings.update',
-                    '@submit.prevent' => 'onSubmit',
-                    '@keydown' => 'form.errors.clear($event.target.name)',
-                    'files' => true,
-                    'role' => 'form',
-                    'class' => 'form-loading-button',
-                    'novalidate' => true,
-                ]) !!}
-
-                    <div class="card-body">
-                        <div id="form-loading" class="active" v-if="form_loading" v-html="form_loading"></div>
-
-                        <div class="row">
-                            {{ Form::textGroup('name', trans('general.name'), 'money-check', ['required' => 'required'], null, 'col-md-12') }}
-
-                            {{ Form::radioGroup('customer', trans('offline-payments::general.form.customer'), 0, trans('general.yes'), trans('general.no'), ['required' => 'required'], 'col-md-12') }}
-
-                            {{ Form::textGroup('order', trans('offline-payments::general.form.order'), 'sort', [], null, 'col-md-12') }}
-
-                            {{ Form::textareaGroup('description', trans('general.description'), null, null, ['rows' => '3', 'enable-v-model' => true]) }}
-
-                            {!! Form::hidden('update_code', null) !!}
-                        </div>
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="row float-right">
-                            {{ Form::saveButtons('settings.index') }}
-                        </div>
-                    </div>
-                {!! Form::close() !!}
-            </div>
-        </div>
-
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header border-bottom-0">
-                    <h3 class="mb-0">{{ trans('offline-payments::general.payment_gateways') }}</h3>
-                </div>
-
-                <div id="delete-loading"></div>
-
-                <div class="table-responsive">
-                    <table class="table table-flush table-hover" id="tbl-items">
-                        <thead class="thead-light">
-                            <tr class="row table-head-line">
-                                <th class="col-xs-6 col-sm-4 col-md-4 col-lg-3">{{ trans('general.name') }}</th>
-                                <th class="col-sm-4  col-md-4 col-lg-4 hidden-sm">{{ trans('general.description') }}</th>
-                                <th class="col-lg-2 hidden-lg">{{ trans('offline-payments::general.form.order') }}</th>
-                                <th class="col-xs-6 col-sm-4 col-md-4 col-lg-3 text-center">{{ trans('general.actions') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if($methods)
-                                @foreach($methods as $item)
-                                    <tr class="row align-items-center border-top-1" id="method-{{ $item->code }}">
-                                        <td class="col-xs-6 col-sm-4 col-md-4 col-lg-3">{{ $item->name }}</td>
-                                        <td class="col-sm-4 col-md-4 col-lg-4 hidden-sm long-texts">{{ ($item->description) ?? trans('general.na') }}</td>
-                                        <td class="col-lg-2 hidden-lg">{{ $item->order }}</td>
-                                        <td class="col-xs-6 col-sm-4 col-md-4 col-lg-3 text-center">
-                                            <div class="dropdown">
-                                                <a class="btn btn-neutral btn-sm text-light items-align-center p-2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <i class="fa fa-ellipsis-h text-muted"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                    {!! Form::button(trans('general.edit'), [
-                                                        'type' => 'button',
-                                                        'class' => 'dropdown-item method-edit',
-                                                        'title' => trans('general.edit'),
-                                                        'data-code' => $item->code,
-                                                        'id' => 'edit-' . $item->code,
-                                                        '@click' => 'onEdit',
-                                                    ]) !!}
-                                                    <div class="dropdown-divider"></div>
-                                                    {!! Form::button(trans('general.delete'), [
-                                                        'type' => 'button',
-                                                        'class' => 'dropdown-item method-delete',
-                                                        'title' => trans('general.delete'),
-                                                        'data-code' => $item->code,
-                                                        'id' => 'delete-' . $item->code,
-                                                        ':disabled' => "update_code == '" . $item->code . "'",
-                                                        '@click' => 'confirmDelete("' . $item->code . '", "' . trans('general.delete') . ' ' . trans_choice('offline-payments::general.methods', 1) . '", "' . trans('general.delete_confirm', ['name' => '<strong>' . $item->name . '</strong>', 'type' => mb_strtolower(trans('offline-payments::general.name'))]) . '", "' . trans('general.cancel') . '", "' . trans('general.delete') . '")',
-                                                    ]) !!}
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
-@push('scripts_start')
-    <script src="{{ asset('modules/OfflinePayments/Resources/assets/js/offline-payments.min.js?v=' . module_version('offline-payments')) }}"></script>
-@endpush
-
-@push('stylesheet')
-    <style type="text/css">
-        #form-loading.active, #delete-loading.active {
-            font-size: 35px;
-            position: absolute;
-            z-index: 500;
-            top: 0px;
-            left: 0px;
-            width: 100%;
-            height: 100%;
-            background: rgb(136, 136, 136);
-            opacity: 0.2;
-            -moz-border-radius-bottomleft: 1px;
-            -moz-border-radius-bottomright: 1px;
-            border-bottom-left-radius: 1px;
-            border-bottom-right-radius: 1px;
-        }
-
-        .form-loading-spin {
-            font-size: 100px;
-            position: absolute;
-            margin: auto;
-            color: #fff;
-            padding: 73% 37%;
-        }
-    </style>
-@endpush
+    <x-script alias="offline-payments" file="offline-payments" />
+</x-layouts.admin>
