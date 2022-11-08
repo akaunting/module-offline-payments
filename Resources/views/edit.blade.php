@@ -40,7 +40,7 @@
                                     {{ trans('general.name') }}
                                 </x-table.th>
             
-                                <x-table.th class="w-5/12 sm:w-5/12">
+                                <x-table.th class="w-4/12 sm:w-5/12">
                                     {{ trans('general.description') }}
                                 </x-table.th>
             
@@ -48,7 +48,7 @@
                                     {{ trans('offline-payments::general.form.order') }}
                                 </x-table.th>
             
-                                <x-table.th class="w-2/12 sm:w-2/12">
+                                <x-table.th class="w-3/12 sm:w-2/12">
                                     {{ trans('general.actions') }}
                                 </x-table.th>
                             </x-table.tr>
@@ -61,7 +61,7 @@
                                         {{ $item->name }}
                                     </x-table.th>
             
-                                    <x-table.th class="w-5/12 sm:w-5/12">
+                                    <x-table.th class="w-4/12 sm:w-5/12">
                                         {{ $item->description ?? trans('general.na') }}
                                     </x-table.th>
             
@@ -69,7 +69,7 @@
                                         {{ $item->order }}
                                     </x-table.th>
             
-                                    <x-table.th class="w-2/12 sm:w-2/12">
+                                    <x-table.th class="w-3/12 sm:w-2/12">
                                         <div class="ltr:right-8 rtl:left-8 flex items-center">
                                             @can('update-offline-payments-settings')
                                                 <x-button
