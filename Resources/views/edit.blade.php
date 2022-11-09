@@ -3,7 +3,7 @@
 
     <x-slot name="content">
         <x-show.container>
-            <x-show.content>
+            <x-show.content class="flex flex-col-reverse lg:flex-row mt-5 sm:mt-12 gap-y-4" override="class">
                 <x-show.content.left>
                     <x-form id="offline-payment" method="POST" route="offline-payments.settings.update">
                         <x-form.section>
