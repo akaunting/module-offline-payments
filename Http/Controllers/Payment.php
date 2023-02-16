@@ -68,6 +68,7 @@ class Payment extends PaymentController
                 'error' => false,
                 'message' => $message,
                 'data' => false,
+                'redirect' => $this->getFinishUrl($invoice),
             ];
         } catch(\Exception $e) {
             $message = $e->getMessage();
@@ -79,6 +80,7 @@ class Payment extends PaymentController
                 'error' => true,
                 'message' => $message,
                 'data' => false,
+                'redirect' => $this->getInvoiceUrl($invoice),
             ];
         }
 
