@@ -13,5 +13,8 @@
     "reports": [],
     "widgets": [],
     "settings": [],
-    "extra-modules": {}
+    "extra-modules": {},
+    "routes": {
+        "redirect_after_install": "offline-payments.settings.edit"
+    }
 }
