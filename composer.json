@@ -1,4 +1,7 @@
 {
+    "config": {
+        "autoloader-suffix": "offlinePayments"
+    },
     "name": "akaunting/module-offline-payments",
     "description": "Offline Payments app for Akaunting",
     "homepage": "https://akaunting.com",
