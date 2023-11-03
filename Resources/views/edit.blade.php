@@ -1,6 +1,12 @@
 <x-layouts.admin>
     <x-slot name="title">{{ trans('offline-payments::general.name') }}</x-slot>
 
+    <x-slot name="favorite"
+        title="{{ trans('offline-payments::general.name') }}"
+        icon="credit_card"
+        route="offline-payments.settings.edit"
+    ></x-slot>
+
     <x-slot name="content">
         <x-show.container>
             <x-show.content class="flex flex-col-reverse lg:flex-row mt-5 sm:mt-12 gap-y-4" override="class">
