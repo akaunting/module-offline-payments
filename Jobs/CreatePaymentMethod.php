@@ -31,6 +31,12 @@ class CreatePaymentMethod extends Job
 
         $code = 'offline-payments.' . Str::slug($this->request->get('name'), '_') . '.' . (count($methods) + 1);
 
+        foreach ($methods as $method) {
+            if (Str::contains($method['code'], 'offline-payments.' . Str::slug($this->request->get('name'), '_') . '.')) {
+                return $method;
+            }
+        }
+
         $payment_method = [
             'code' => $code,
             'name' => $this->request->get('name'),
