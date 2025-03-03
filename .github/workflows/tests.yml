@@ -12,28 +12,70 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    timeout-minutes: 40
+
     strategy:
       matrix:
-        php: ['7.3', '7.4']
+        php: ['8.1', '8.2', '8.3']
 
     steps:
       - name: Checkout Akaunting
-        uses: actions/checkout@v2
+        timeout-minutes: 1
+        uses: actions/checkout@v4
         with:
           repository: akaunting/akaunting
 
-      - name: Checkout Offline Payments module
-        uses: actions/checkout@v2
+      - name: Checkout module to tmp path
+        timeout-minutes: 1
+        uses: actions/checkout@v4
         with:
-          path: modules/OfflinePayments
+          path: tmp-path-for-module
+
+      - id: set_var
+        timeout-minutes: 1
+        run: |
+          content=`cat ./tmp-path-for-module/module.json`
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=moduleJson::$content"
+
+      - name: Create module folder name which is PascalCase
+        timeout-minutes: 1
+        run: |
+          MODULE_FOLDER_NAME=$(echo -n ${{fromJson(steps.set_var.outputs.moduleJson).alias}} | sed -r 's/(^|-)([a-z])/\U\2/g')
+          echo "MODULE_FOLDER_NAME=${MODULE_FOLDER_NAME}" >> $GITHUB_ENV
+
+      - name: Checkout module
+        timeout-minutes: 1
+        uses: actions/checkout@v4
+        with:
+          path: modules/${{ env.MODULE_FOLDER_NAME }}
+
+      - name: Download the extra modules
+        timeout-minutes: 10
+        run: |
+          for k in $(jq -r '."extra-modules" | keys | .[]' tmp-path-for-module/module.json); do
+            modName=$(echo -n $k | sed -r 's/(^|-)([a-z])/\U\2/g')
+            mkdir -p modules/$modName
+            git clone https://${{ secrets.AKAUNTING_OFFICIAL_TOKEN }}:x-oauth-basic@github.com/akaunting/module-${k}.git modules/$modName
+          done
+
+      - name: Remove the tmp folder
+        timeout-minutes: 1
+        run: rm -rf tmp-path-for-module
 
       - name: Cache Composer
-        uses: actions/cache@v1
+        timeout-minutes: 1
+        uses: actions/cache@v4
         with:
           path: ~/.composer/cache/files
           key: php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
       - name: Setup PHP
+        timeout-minutes: 1
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -41,10 +83,13 @@ jobs:
           coverage: none
 
       - name: Copy .env
+        timeout-minutes: 1
         run: cp .env.testing .env
 
       - name: Install Composer
-        run: cd modules/OfflinePayments ; composer test ; cd ../.. ; composer test
+        timeout-minutes: 5
+        run: cd "modules/${{ env.MODULE_FOLDER_NAME }}" ; composer test ; cd ../.. ; composer test
 
       - name: Execute tests
+        timeout-minutes: 30
         run: php artisan test --parallel
