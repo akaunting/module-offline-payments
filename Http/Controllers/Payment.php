@@ -57,7 +57,14 @@ class Payment extends PaymentController
     public function confirm(Document $invoice, Request $request)
     {
         try {
-            event(new PaymentReceived($invoice, $request));
+            // The confirm form only picks the payment method. The amount, currency,
+            // rate, account and category are worked out from the invoice, not sent.
+            $payment_method = $this->getPaymentMethodCode($request->get('payment_method'));
+
+            event(new PaymentReceived($invoice, [
+                'payment_method' => $payment_method,
+                'type' => 'income',
+            ]));
 
             $message = trans('messages.success.added', ['type' => trans_choice('general.payments', 1)]);
 
@@ -85,5 +92,21 @@ class Payment extends PaymentController
         }
 
         return response()->json($response);
+    }
+
+    /**
+     * The code of a payment method set up in the settings of the app.
+     *
+     * @throws \Exception
+     */
+    protected function getPaymentMethodCode($code): string
+    {
+        $payment_methods = json_decode(setting('offline-payments.methods'), true) ?: [];
+
+        if (! is_string($code) || ! in_array($code, array_column($payment_methods, 'code'), true)) {
+            throw new \Exception(trans('validation.in', ['attribute' => trans_choice('general.payment_methods', 1)]));
+        }
+
+        return $code;
     }
 }
