@@ -17,5 +17,6 @@ return [
     'methods'           => 'Metode|Metoder',
 
     'payment_gateways'  => 'Offline betalingsmetoder',
+    'gateways_description'  => 'Administrer alle offline betalingsmetoder',
 
 ];

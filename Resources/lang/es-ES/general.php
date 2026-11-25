@@ -17,5 +17,6 @@ return [
     'methods'           => 'Método|Métodos',
 
     'payment_gateways'  => 'Asignación de Medios de Pago',
+    'gateways_description'  => 'Gestionar todos los medios de pago sin conexión',
 
 ];

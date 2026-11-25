@@ -17,5 +17,6 @@ return [
     'methods'           => 'Metodë|Metodat',
 
     'payment_gateways'  => 'Metodat e Pagesës Offline',
+    'gateways_description'  => 'Menaxho të gjitha metodat e pagesës offline',
 
 ];

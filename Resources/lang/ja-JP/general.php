@@ -17,5 +17,6 @@ return [
     'methods'           => '方法|方法',
 
     'payment_gateways'  => 'オフライン支払い方法',
+    'gateways_description'  => 'すべてのオフライン支払い方法を管理',
 
 ];

@@ -17,5 +17,6 @@ return [
     'methods'           => 'Mètode|Mètodes',
 
     'payment_gateways'  => 'Mètodes de pagament fora de línia',
+    'gateways_description'  => 'Gestiona tots els mètodes de pagament fora de línia',
 
 ];

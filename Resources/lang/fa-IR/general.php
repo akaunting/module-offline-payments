@@ -17,5 +17,6 @@ return [
     'methods'           => 'روش|روش ها',
 
     'payment_gateways'  => 'روش های پرداخت آفلاین',
+    'gateways_description'  => 'مدیریت همه روش های پرداخت آفلاین',
 
 ];

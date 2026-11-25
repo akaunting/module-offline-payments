@@ -17,5 +17,6 @@ return [
     'methods'           => 'طريقة | طرق',
 
     'payment_gateways'  => 'طرق الدفع بدون أنترنت',
+    'gateways_description'  => 'إدارة جميع طرق الدفع بدون أنترنت',
 
 ];

@@ -17,5 +17,6 @@ return [
     'methods'           => 'Methode|Methoden',
 
     'payment_gateways'  => 'Offline-Zahlungen-Methoden',
+    'gateways_description'  => 'Alle Offline-Zahlungsmethoden verwalten',
 
 ];

@@ -17,5 +17,6 @@ return [
     'methods'           => 'Método|Métodos',
 
     'payment_gateways'  => 'Métodos de Pagamento Offline',
+    'gateways_description'  => 'Gerenciar todos os métodos de pagamento offline',
 
 ];
