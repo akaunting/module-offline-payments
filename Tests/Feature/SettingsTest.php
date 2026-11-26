@@ -2,6 +2,8 @@
 
 namespace Modules\OfflinePayments\Tests\Feature;
 
+use App\Jobs\Auth\CreateUser;
+use App\Models\Auth\Permission;
 use Modules\OfflinePayments\Jobs\CreatePaymentMethod;
 use Tests\Feature\FeatureTestCase;
 
@@ -51,6 +53,48 @@ class SettingsTest extends FeatureTestCase
                 'data' => [
                     'name' => $payment_method['name'],
                 ],
+            ]);
+    }
+
+    public function testItShouldNotGetThePaymentMethodWithoutTheSettingsPermission()
+    {
+        $payment_method = $this->dispatch(new CreatePaymentMethod($this->getRequest()));
+
+        // Plain models, as in the core tests, with the panel permission only
+        $role = role_model_class()::create([
+            'name' => 'panel-reader',
+            'display_name' => 'Panel Reader',
+            'description' => 'Panel Reader',
+        ]);
+
+        $role->attachPermission(Permission::firstOrCreate(['name' => 'read-admin-panel'], [
+            'display_name' => 'read-admin-panel',
+            'description' => 'read-admin-panel',
+        ]));
+
+        $reader = $this->dispatch(new CreateUser(array_merge(user_model_class()::factory()->raw(), [
+            'enabled' => 1,
+            'companies' => [$this->company->id],
+            'roles' => [$role->id],
+        ])));
+
+        $this->loginAs($reader)
+            ->withExceptionHandling()
+            ->post(route('offline-payments.settings.get', ['code' => $payment_method['code']]))
+            ->assertForbidden();
+    }
+
+    public function testItShouldEscapeTheNameOfThePaymentMethodInTheMessages()
+    {
+        $request = $this->getRequest();
+        $request['name'] = '<img src=x onerror=alert(1)>';
+
+        $this->loginAs()
+            ->post(route('offline-payments.settings.update'), $request)
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => trans('messages.success.added', ['type' => escape_html($request['name'])]),
             ]);
     }
 

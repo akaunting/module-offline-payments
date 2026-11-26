@@ -19,7 +19,7 @@ class Payment extends PaymentController
     {
         $setting = [];
 
-        $payment_methods = json_decode(setting('offline-payments.methods'), true);
+        $payment_methods = $this->getPaymentMethods($invoice);
 
         foreach ($payment_methods as $payment_method) {
             if ($payment_method['code'] == $request['payment_method']) {
@@ -57,9 +57,14 @@ class Payment extends PaymentController
     public function confirm(Document $invoice, Request $request)
     {
         try {
+            // A cancelled or paid invoice, or another document, takes no payment
+            if (($invoice->type !== Document::INVOICE_TYPE) || in_array($invoice->status, ['cancelled', 'paid'])) {
+                throw new \Exception(trans('errors.message.403'));
+            }
+
             // The confirm form only picks the payment method. The amount, currency,
             // rate, account and category are worked out from the invoice, not sent.
-            $payment_method = $this->getPaymentMethodCode($request->get('payment_method'));
+            $payment_method = $this->getPaymentMethodCode($request->get('payment_method'), $invoice);
 
             event(new PaymentReceived($invoice, [
                 'payment_method' => $payment_method,
@@ -99,14 +104,31 @@ class Payment extends PaymentController
      *
      * @throws \Exception
      */
-    protected function getPaymentMethodCode($code): string
+    protected function getPaymentMethodCode($code, Document $invoice): string
     {
-        $payment_methods = json_decode(setting('offline-payments.methods'), true) ?: [];
+        $payment_methods = $this->getPaymentMethods($invoice);
 
         if (! is_string($code) || ! in_array($code, array_column($payment_methods, 'code'), true)) {
             throw new \Exception(trans('validation.in', ['attribute' => trans_choice('general.payment_methods', 1)]));
         }
 
         return $code;
+    }
+
+    /**
+     * The payment methods set up in the settings of the app. The customer, on a signed
+     * link or the client portal, gets only the ones set to be shown to customers.
+     */
+    protected function getPaymentMethods(Document $invoice): array
+    {
+        $payment_methods = json_decode(setting('offline-payments.methods'), true) ?: [];
+
+        if (request()->isNotSigned($invoice->company_id) && request()->isNotPortal($invoice->company_id)) {
+            return $payment_methods;
+        }
+
+        return array_values(array_filter($payment_methods, function ($payment_method) {
+            return ! empty($payment_method['customer']);
+        }));
     }
 }

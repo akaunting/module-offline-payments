@@ -66,7 +66,7 @@ class DeletePaymentMethod extends Job
             $methods = json_decode(setting('offline-payments.methods'), true);
             $method = $methods[array_search($this->request->get('code'), array_column($methods, 'code'))];
 
-            $message = trans('messages.warning.deleted', ['name' => $method['name'], 'text' => implode(', ', $relationships)]);
+            $message = trans('messages.warning.deleted', ['name' => escape_html($method['name']), 'text' => implode(', ', $relationships)]);
 
             throw new \Exception($message);
         }

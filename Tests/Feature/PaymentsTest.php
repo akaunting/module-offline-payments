@@ -8,9 +8,10 @@ class PaymentsTest extends PaymentTestCase
 {
     public $alias = 'offline-payments';
 
-    // A payment method that is set up, the cash one the company starts with
+    // The method updateSetting() adds, shown to customers. The cash and bank transfer
+    // ones the company starts with are not, so a customer can not pay with them.
     public $payment_request = [
-        'payment_method'    => 'offline-payments.cash.1',
+        'payment_method'    => 'offline-payments.offline_payments.3',
         'type'              => 'income',
     ];
 
@@ -51,6 +52,44 @@ class PaymentsTest extends PaymentTestCase
             'document_id'   => $this->invoice->id,
             'currency_code' => 'EUR',
         ]);
+    }
+
+    public function testItShouldNotPayWithAPaymentMethodNotShownToCustomers()
+    {
+        $this->updateSetting();
+
+        $this->createInvoice();
+
+        // The cash method the company starts with is for the admins only
+        $this->post($this->getConfirmUrl(), ['payment_method' => 'offline-payments.cash.1'])
+            ->assertOk()
+            ->assertJson(['success' => false, 'error' => true]);
+
+        $this->assertDatabaseMissing('transactions', [
+            'document_id' => $this->invoice->id,
+        ]);
+    }
+
+    public function testItShouldNotPayACancelledOrPaidInvoice()
+    {
+        $this->updateSetting();
+
+        foreach (['cancelled', 'paid'] as $status) {
+            $this->createInvoice();
+
+            $this->invoice->status = $status;
+            $this->invoice->save();
+
+            $this->post($this->getConfirmUrl(), $this->payment_request)
+                ->assertOk()
+                ->assertJson(['success' => false, 'error' => true]);
+
+            $this->assertSame($status, $this->invoice->fresh()->status);
+
+            $this->assertDatabaseMissing('transactions', [
+                'document_id' => $this->invoice->id,
+            ]);
+        }
     }
 
     public function testItShouldNotPayWithAPaymentMethodThatIsNotSetUp()

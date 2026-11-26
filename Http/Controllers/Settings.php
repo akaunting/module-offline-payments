@@ -13,6 +13,14 @@ use Modules\OfflinePayments\Jobs\UpdatePaymentMethod;
 
 class Settings extends Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+        // get is not in the CRUD map of the permissions, so it would need the panel permission only
+        $this->middleware('permission:read-offline-payments-settings')->only('get');
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -44,11 +52,11 @@ class Settings extends Controller
         if (!empty($request->get('update_code')) && $code_exists == true) {
             $payment_method = $this->dispatch(new UpdatePaymentMethod($request));
 
-            $message = trans('messages.success.updated', ['type' => $payment_method['name']]);
+            $message = trans('messages.success.updated', ['type' => escape_html($payment_method['name'])]);
         } else {
             $payment_method = $this->dispatch(new CreatePaymentMethod($request));
 
-            $message = trans('messages.success.added', ['type' => $payment_method['name']]);
+            $message = trans('messages.success.added', ['type' => escape_html($payment_method['name'])]);
         }
 
         flash($message)->success();
@@ -112,7 +120,7 @@ class Settings extends Controller
         $response = $this->ajaxDispatch(new DeletePaymentMethod($request));
 
         if ($response['success']) {
-            $response['message'] = trans('messages.success.deleted', ['type' => $response['data']['name']]);
+            $response['message'] = trans('messages.success.deleted', ['type' => escape_html($response['data']['name'])]);
         }
 
         return response()->json($response);
