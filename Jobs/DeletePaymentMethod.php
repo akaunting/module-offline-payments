@@ -30,7 +30,7 @@ class DeletePaymentMethod extends Job
     {
         $this->authorize();
 
-        $methods = json_decode(setting('offline-payments.methods'), true);
+        $methods = json_decode(setting('offline-payments.methods'), true) ?: [];
 
         $payment_method = [];
 
@@ -46,7 +46,8 @@ class DeletePaymentMethod extends Job
             unset($methods[$key]);
         }
 
-        setting()->set('offline-payments.methods', json_encode($methods));
+        // Kept as a list, as unset leaves gaps in the keys that would store it as an object
+        setting()->set('offline-payments.methods', json_encode(array_values($methods)));
 
         setting()->save();
 
@@ -63,7 +64,7 @@ class DeletePaymentMethod extends Job
     public function authorize()
     {
         if ($relationships = $this->getRelationships()) {
-            $methods = json_decode(setting('offline-payments.methods'), true);
+            $methods = json_decode(setting('offline-payments.methods'), true) ?: [];
             $method = $methods[array_search($this->request->get('code'), array_column($methods, 'code'))];
 
             $message = trans('messages.warning.deleted', ['name' => escape_html($method['name']), 'text' => implode(', ', $relationships)]);
@@ -78,6 +79,11 @@ class DeletePaymentMethod extends Job
 
         if ($transaction_count = Transaction::where('payment_method', $this->request->get('code'))->count()) {
             $counter[] = $transaction_count . ' ' . strtolower(trans_choice('general.transactions', ($transaction_count > 1) ? 2 : 1));
+        }
+
+        // The default payment method of the company, as the default currency is kept
+        if ($this->request->get('code') == setting('default.payment_method')) {
+            $counter[] = strtolower(trans_choice('general.companies', 1));
         }
 
         return $counter;

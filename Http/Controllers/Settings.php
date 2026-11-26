@@ -28,7 +28,7 @@ class Settings extends Controller
      */
     public function edit()
     {
-        $methods = json_decode(setting('offline-payments.methods'));
+        $methods = json_decode(setting('offline-payments.methods')) ?: [];
 
         return view('offline-payments::edit', compact('methods'));
     }
@@ -43,7 +43,7 @@ class Settings extends Controller
     public function update(Request $request)
     {
         $code_exists = false;
-        $methods = json_decode(setting('offline-payments.methods'), true);
+        $methods = json_decode(setting('offline-payments.methods'), true) ?: [];
 
         if (in_array($request->get('update_code'), array_column($methods, 'code'))) {
             $code_exists = true;
@@ -82,14 +82,14 @@ class Settings extends Controller
 
         $code = $request->get('code');
 
-        $methods = json_decode(setting('offline-payments.methods'), true);
+        $methods = json_decode(setting('offline-payments.methods'), true) ?: [];
 
         foreach ($methods as $key => $method) {
             if ($method['code'] != $code) {
                 continue;
             }
 
-            $method['title'] = trans('offline-payments::offline-payments.edit', ['method' => $method['name']]);
+            $method['title'] = trans('offline-payments::general.edit', ['method' => $method['name']]);
             $method['update_code'] = $code;
 
             $code = explode('.', $method['code']);

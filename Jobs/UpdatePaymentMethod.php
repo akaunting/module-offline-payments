@@ -26,7 +26,7 @@ class UpdatePaymentMethod extends Job
      */
     public function handle()
     {
-        $methods = json_decode(setting('offline-payments.methods'), true);
+        $methods = json_decode(setting('offline-payments.methods'), true) ?: [];
 
         $payment_method = [];
 

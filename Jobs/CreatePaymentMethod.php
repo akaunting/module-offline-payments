@@ -27,15 +27,29 @@ class CreatePaymentMethod extends Job
      */
     public function handle()
     {
-        $methods = json_decode(setting('offline-payments.methods'), true);
+        $methods = json_decode(setting('offline-payments.methods'), true) ?: [];
 
-        $code = 'offline-payments.' . Str::slug($this->request->get('name'), '_') . '.' . (count($methods) + 1);
+        $name = (string) $this->request->get('name');
 
+        // A method with the same name is already there
         foreach ($methods as $method) {
-            if (Str::contains($method['code'], 'offline-payments.' . Str::slug($this->request->get('name'), '_') . '.')) {
+            if (Str::lower(trim($method['name'])) === Str::lower(trim($name))) {
                 return $method;
             }
         }
+
+        // A name in a script the slug can not write, like Arabic or Japanese, leaves it empty
+        $slug = Str::slug($name, '_') ?: 'method';
+
+        // Counted from the number of methods, and past the codes in use, which a deleted method frees
+        $codes = array_column($methods, 'code');
+        $number = count($methods) + 1;
+
+        while (in_array('offline-payments.' . $slug . '.' . $number, $codes, true)) {
+            $number++;
+        }
+
+        $code = 'offline-payments.' . $slug . '.' . $number;
 
         $payment_method = [
             'code' => $code,

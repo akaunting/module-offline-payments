@@ -6,7 +6,7 @@ return [
     'description'       => 'Lag ubegrensede betalingsalternativer for administrasjonsbruk',
 
     'add_new'           => 'Legg til ny',
-    'edit'              => 'Rediger:: method',
+    'edit'              => 'Rediger: :method',
 
     'form' => [
         'code'          => 'Kode',

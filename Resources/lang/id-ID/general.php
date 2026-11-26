@@ -6,7 +6,7 @@ return [
     'description'           => 'Buat opsi pembayaran tak terbatas untuk admin gunakan',
 
     'add_new'               => 'Tambah Baru',
-    'edit'                  => 'Edit:: metode',
+    'edit'                  => 'Ubah: :method',
 
     'form' => [
         'code'              => 'Kode',
